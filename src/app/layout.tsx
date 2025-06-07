@@ -1,5 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Montserrat } from "next/font/google";
+import { ToastContainer } from "react-toastify";
+import { AuthProvider } from "@/context/auth-context";
+
+const montserrat = Montserrat({
+  variable: "--montserrat",
+  subsets: ["latin-ext"],
+});
 
 export const metadata: Metadata = {
   title: "Importador - eNube",
@@ -13,8 +21,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body>
-        {children}
+      <body className={`${montserrat.variable} antialiased`}>
+        <AuthProvider>
+          <ToastContainer />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

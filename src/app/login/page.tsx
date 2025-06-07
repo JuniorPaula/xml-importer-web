@@ -1,39 +1,30 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useState } from 'react'
+import { loginUser } from '@/services/auth-service'
+import { useAuth } from '@/context/auth-context'
+import { toast } from 'react-toastify'
 
 const logo = "/assets/logo.png"
 
 export default function LoginPage() {
-  const router = useRouter()
+  const { login } = useAuth();
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
 
     try {
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
+      const { token, user} = await loginUser({ email, password });
+      console.info("Login successful", user, token)
+      login(user, token)
 
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message || 'Login failed')
-
-      localStorage.setItem('token', data.token)
-      router.push('/')
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError('An unexpected error occurred')
-      }
+      toast.success("Login realizado com sucesso!");
+    } catch {
+      toast.error("Erro no login, verifique suas credenciais.");
     }
   }
 
@@ -46,12 +37,11 @@ export default function LoginPage() {
             alt="eNube Logo"
             width={150}
             height={150}
+            priority
             className="mb-6" />
         </div>
         <form onSubmit={handleLogin} className="bg-white p-8 rounded shadow-md w-full max-w-sm">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Login</h2>
-
-          {error && <p className="text-red-500 mb-4">{error}</p>}
 
           <input
             type="email"

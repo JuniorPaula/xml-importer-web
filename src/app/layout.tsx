@@ -3,6 +3,9 @@ import "./globals.css";
 import { Montserrat } from "next/font/google";
 import { ToastContainer } from "react-toastify";
 import { AuthProvider } from "@/context/auth-context";
+import { SidebarProvider } from "@/context/sidebar-context";
+import LayoutWrapper from "./layout-wrapper";
+import Sidebar from "./sidebar";
 
 const montserrat = Montserrat({
   variable: "--montserrat",
@@ -21,10 +24,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${montserrat.variable} antialiased`}>
+      <body className={`${montserrat.variable} antialiased min-h-screen w-full flex`}>
         <AuthProvider>
-          <ToastContainer />
-          {children}
+          <SidebarProvider>
+            <ToastContainer />
+            <LayoutWrapper>
+              <Sidebar />
+                {children}
+            </LayoutWrapper>
+          </SidebarProvider>
         </AuthProvider>
       </body>
     </html>

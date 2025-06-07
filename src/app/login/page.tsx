@@ -19,7 +19,6 @@ export default function LoginPage() {
 
     try {
       const { token, user} = await loginUser({ email, password });
-      console.info("Login successful", user, token)
       login(user, token)
 
       toast.success("Login realizado com sucesso!");

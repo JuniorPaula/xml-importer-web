@@ -2,22 +2,54 @@
 import { useState } from "react";
 import { SummaryData } from "../page";
 
-export function CategoryTable(data: SummaryData | null) {
-  const [search, setSearch] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemPerPage = 10
+export function CategoryTable({ meter_category_totals }: SummaryData) {
+  const [search, setSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortField, setSortField] = useState<'meter_category' | 'total' | null>(null);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const itemsPerPage = 10;
 
-  const hasMeterCategories = data && data.meter_category_totals.length > 0
+  function handleSort(field: 'meter_category' | 'total') {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+    setCurrentPage(1);
+  }
 
-  const filterCategories = data?.meter_category_totals
-    .filter((cat) => cat.meter_category.toLowerCase().includes(search.toLowerCase()))
-    .sort((a, b) => b.total - a.total)
+  const filtered = meter_category_totals
+    ?.filter((cat) =>
+      cat.meter_category.toLowerCase().includes(search.toLowerCase())
+    ) ?? [];
 
-  const totalPages = Math.ceil((filterCategories?.length ?? 0) / itemPerPage)
-  const paginatedCategories = filterCategories?.slice(
-    (currentPage - 1) * itemPerPage,
-    currentPage * itemPerPage
-  ) ?? []
+  const sorted = [...filtered].sort((a, b) => {
+    if (!sortField) return 0;
+
+    const aVal = a[sortField];
+    const bVal = b[sortField];
+
+    if (typeof aVal === 'string' && typeof bVal === 'string') {
+      return sortOrder === 'asc'
+        ? aVal.localeCompare(bVal)
+        : bVal.localeCompare(aVal);
+    }
+
+    if (typeof aVal === 'number' && typeof bVal === 'number') {
+      return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
+    }
+
+    return 0;
+  });
+
+  const totalPages = Math.ceil(sorted.length / itemsPerPage);
+  const paginated = sorted.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const hasData = meter_category_totals?.length > 0;
 
   return (
     <div className="bg-white p-4 rounded shadow">
@@ -33,24 +65,29 @@ export function CategoryTable(data: SummaryData | null) {
       <table className="w-full text-sm text-left border rounded overflow-hidden">
         <thead className="bg-gray-100">
           <tr>
-            <th className="p-2">Categoria</th>
-            <th className="p-2 text-right">Total (R$)</th>
+            <th
+              className="p-2 cursor-pointer select-none"
+              onClick={() => handleSort('meter_category')}
+            >
+              Categoria ↑↓
+            </th>
+            <th
+              className="p-2 text-right cursor-pointer select-none"
+              onClick={() => handleSort('total')}
+            >
+              Total (R$) ↑↓
+            </th>
           </tr>
         </thead>
         <tbody>
-          {!hasMeterCategories && (
+          {!hasData || paginated.length === 0 ? (
             <tr>
               <td colSpan={2} className="p-4 text-center text-gray-500">
                 Nenhuma categoria encontrada.
               </td>
             </tr>
-          )}
-          {paginatedCategories
-            .filter((cat) =>
-              cat.meter_category.toLowerCase().includes(search.toLowerCase())
-            )
-            .sort((a, b) => b.total - a.total)
-            .map((cat) => (
+          ) : (
+            paginated.map((cat) => (
               <tr key={cat.meter_category} className="border-t">
                 <td className="p-2">{cat.meter_category}</td>
                 <td className="p-2 text-right">
@@ -59,12 +96,14 @@ export function CategoryTable(data: SummaryData | null) {
                   })}
                 </td>
               </tr>
-            ))}
+            ))
+          )}
         </tbody>
       </table>
+
       <div className="flex justify-between items-center mt-4 text-sm">
         <span>
-          Página {currentPage} de {totalPages}
+          Página {currentPage} de {totalPages || 1}
         </span>
 
         <div className="space-x-2">
@@ -77,7 +116,7 @@ export function CategoryTable(data: SummaryData | null) {
           </button>
           <button
             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
+            disabled={currentPage === totalPages || totalPages === 0}
             className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
           >
             Próximo
@@ -85,5 +124,5 @@ export function CategoryTable(data: SummaryData | null) {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -2,6 +2,7 @@
 
 import { createApi } from "@/services/axios-service";
 import Cookies from "js-cookie";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 type InvoiceItem = {
@@ -65,14 +66,15 @@ export default function InvoiceItemsPage() {
         <thead className="bg-gray-100">
           <tr>
             <th className="text-left p-2 cursor-pointer" onClick={() => handleSort("product_name")}>
-              Produto
+              Produto ↑↓
             </th>
             <th className="text-left p-2 cursor-pointer" onClick={() => handleSort("meter_category")}>
-              Categoria
+              Categoria ↑↓
             </th>
             <th className="text-left p-2">Qtd.</th>
             <th className="text-left p-2">Preço Unitário</th>
             <th className="text-left p-2">Total</th>
+            <th className="text-left p-2">Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -99,6 +101,14 @@ export default function InvoiceItemsPage() {
                     style: "currency",
                     currency: "BRL",
                   })}
+                </td>
+                <td className="p-2">
+                  <Link
+                    href={`/invoice-items/${item.id}`}
+                    className="text-blue-600 hover:underline text-sm"
+                  >
+                    Detalhes
+                  </Link>
                 </td>
               </tr>
             ))

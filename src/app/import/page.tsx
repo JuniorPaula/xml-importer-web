@@ -5,13 +5,14 @@ import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { createApi } from "@/services/axios-service";
 import * as XLSX from "xlsx";
+import ImportStatusChecker from "./components/import-status-check";
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [previewData, setPreviewData] = useState<any[][]>([]);
+  const [previewData, setPreviewData] = useState<never[][]>([]);
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [importId, setImportId] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -32,8 +33,7 @@ export default function UploadPage() {
       const workbook = XLSX.read(data, { type: "array" });
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as any[][];
+      const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as never[][];
       const firstRows = jsonData.slice(0, 5);
       setPreviewData(firstRows);
       setPreviewLoading(false);
@@ -63,6 +63,7 @@ export default function UploadPage() {
       toast.success(res.data.message || "Arquivo enviado com sucesso");
       setFile(null);
       setPreviewData([]);
+      setImportId(res.data.data.import_id || null);
     } catch (err) {
       console.error(err);
       toast.error("Erro ao enviar o arquivo");
@@ -74,6 +75,7 @@ export default function UploadPage() {
   return (
     <div className="p-6 max-w-xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Importar Arquivo Excel</h1>
+      {importId && <ImportStatusChecker importId={importId} />}
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow space-y-4">
         <input
           type="file"

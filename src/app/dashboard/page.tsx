@@ -22,7 +22,9 @@ type SummaryData = {
 export default function DashboardPage() {
   const [search, setSearch] = useState('')
   const [data, setData] = useState<SummaryData | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
   const insights = getInsights(data as SummaryData)
+  const itemPerPage = 10
 
   const iconMap = {
     info: '🔍',
@@ -30,6 +32,16 @@ export default function DashboardPage() {
     warning: '⚠️',
     danger: '❌',
   } as const
+
+  const filterCategories = data?.meter_category_totals
+    .filter((cat) => cat.meter_category.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => b.total - a.total)
+
+  const totalPages = Math.ceil((filterCategories?.length ?? 0) / itemPerPage)
+  const paginatedCategories = filterCategories?.slice(
+    (currentPage - 1) * itemPerPage,
+    currentPage * itemPerPage
+  ) ?? []
 
 
   const getSummary = async () => {
@@ -146,14 +158,14 @@ export default function DashboardPage() {
             </tr>
           </thead>
           <tbody>
-            { !hasMeterCategories && (
+            {!hasMeterCategories && (
               <tr>
                 <td colSpan={2} className="p-4 text-center text-gray-500">
                   Nenhuma categoria encontrada.
                 </td>
               </tr>
             )}
-            {data && data.meter_category_totals
+            {paginatedCategories
               .filter((cat) =>
                 cat.meter_category.toLowerCase().includes(search.toLowerCase())
               )
@@ -170,6 +182,28 @@ export default function DashboardPage() {
               ))}
           </tbody>
         </table>
+        <div className="flex justify-between items-center mt-4 text-sm">
+          <span>
+            Página {currentPage} de {totalPages}
+          </span>
+
+          <div className="space-x-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+            >
+              Anterior
+            </button>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+            >
+              Próximo
+            </button>
+          </div>
+        </div>
       </div>
 
     </div>

@@ -4,7 +4,6 @@ import { createApi } from '@/services/axios-service'
 import { useEffect, useState } from 'react'
 import { useCallback } from 'react'
 
-
 type Customer = {
   id: string
   name: string
@@ -92,13 +91,15 @@ export default function CustomersPage() {
           </tr>
         </thead>
         <tbody>
-          {customers.map((customer) => (
+          {customers.length > 0 ? customers.map((customer) => (
             <tr key={customer.id} className="border-t">
               <td className="p-2">{customer.name}</td>
               <td className="p-2">{customer.domain}</td>
               <td className="p-2">{customer.country}</td>
             </tr>
-          ))}
+          )) : 
+            <td colSpan={3} className="text-center p-2">Nenhum cliente encontrado</td>
+          }
         </tbody>
       </table>
 

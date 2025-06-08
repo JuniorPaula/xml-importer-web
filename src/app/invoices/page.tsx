@@ -1,21 +1,33 @@
 'use client'
 
+import { createApi } from "@/services/axios-service";
 import Cookies from "js-cookie";
-import { createApi } from '@/services/axios-service'
 import { useCallback, useEffect, useState } from 'react'
 
-type Product = {
+type Invoice = {
   id: string
-  name: string
-  sku_name: string
-  sku_id: string
-  availability_id: string
-  publisher_name: string
-  entitlement_desc: string
+  partner_id: string
+  customer_id: string
+  exchange_rate: number
+  exchange_rate_date: string
+  charge_start_date: string
+  charge_end_date: string
+  customer: {
+    id: string
+    name: string
+    domain: string
+    country: string
+  }
+  partner: {
+    ID: string
+    Name: string
+    MpnID: number
+    Tier2MpnID: number
+  }
 }
 
 type ApiResponse = {
-  data: Product[]
+  data: Invoice[]
   page: number
   pageSize: number
   total: number
@@ -23,13 +35,13 @@ type ApiResponse = {
   status: string
 }
 
-export default function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>([])
+export default function InvoicesPage() {
+  const [invoices, setInvoices] = useState<Invoice[]>([])
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
-  const getProducts = useCallback(async () => {
+  const getInvoices = useCallback(async () => {
     const token = Cookies.get("_token_")
     const api = createApi(token);
 
@@ -37,30 +49,30 @@ export default function ProductsPage() {
       page: String(page),
       pageSize: '10',
     })
-    if (search) params.append('name', search)
+    if (search) params.append('customer_id', search)
 
       try {
-      const res = await api.get(`/api/products?${params.toString()}`)
+      const res = await api.get(`/api/invoices?${params.toString()}`)
       const data: ApiResponse = res.data
-      setProducts(data.data)
+      setInvoices(data.data)
       setTotalPages(data.totalPages)
     } catch (error) {
-      console.error('Error fetching products:', error)
+      console.error('Error fetching invoices:', error)
     }
   }, [page, search])
 
   useEffect(() => {
-    getProducts()
-  }, [getProducts])
+    getInvoices()
+  }, [getInvoices])
 
   return (
     <div className="p-4 space-y-6">
-      <h1 className="text-2xl font-bold">Produtos</h1>
+      <h1 className="text-2xl font-bold">Notas Fiscais</h1>
 
       <div className="flex flex-col md:flex-row md:items-center gap-4">
         <input
           type="text"
-          placeholder="Buscar produto..."
+          placeholder="Buscar por id do cliente..."
           value={search}
           onChange={(e) => {
             setSearch(e.target.value)
@@ -73,24 +85,28 @@ export default function ProductsPage() {
       <table className="w-full bg-white rounded shadow text-sm">
         <thead className="bg-gray-100">
           <tr>
-            <th className="text-left p-2">Nome</th>
-            <th className="text-left p-2">SKU</th>
-            <th className="text-left p-2">Disponibilidade</th>
-            <th className="text-left p-2">Editor</th>
-            <th className="text-left p-2">Origem</th>
+            <th className="text-left p-2">ID</th>
+            <th className="text-left p-2">Cliente</th>
+            <th className="text-left p-2">ID Cliente</th>
+            <th className="text-left p-2">Domínio</th>
+            <th className="text-left p-2">Parceiro</th>
+            <th className="text-left p-2">Início</th>
+            <th className="text-left p-2">Fim</th>
           </tr>
         </thead>
         <tbody>
-          {products.length > 0 ? products.map((product) => (
-            <tr key={product.id} className="border-t">
-              <td className="p-2">{product.name}</td>
-              <td className="p-2">{product.sku_name}</td>
-              <td className="p-2">{product.availability_id}</td>
-              <td className="p-2">{product.publisher_name}</td>
-              <td className="p-2">{product.entitlement_desc}</td>
+          {invoices.length > 0 ? invoices.map((inv) => (
+            <tr key={inv.id} className="border-t">
+              <td className="p-2">{inv.id}</td>
+              <td className="p-2">{inv.customer.name}</td>
+              <td className="p-2">{inv.customer_id}</td>
+              <td className="p-2">{inv.customer.domain}</td>
+              <td className="p-2">{inv.partner.Name}</td>
+              <td className="p-2">{new Date(inv.charge_start_date).toLocaleDateString()}</td>
+              <td className="p-2">{new Date(inv.charge_end_date).toLocaleDateString()}</td>
             </tr>
           )) :
-            <td colSpan={5} className="text-center p-2">Nenhum produto encontrado</td>
+            <td colSpan={7} className="text-center p-2">Nenhum nota encontrada</td>
           }
         </tbody>
       </table>

@@ -5,7 +5,6 @@ import { ToastContainer } from "react-toastify";
 import { AuthProvider } from "@/context/auth-context";
 import { SidebarProvider } from "@/context/sidebar-context";
 import LayoutWrapper from "./layout-wrapper";
-import Sidebar from "./sidebar";
 
 const montserrat = Montserrat({
   variable: "--montserrat",
@@ -29,7 +28,6 @@ export default function RootLayout({
           <SidebarProvider>
             <ToastContainer />
             <LayoutWrapper>
-              <Sidebar />
                 {children}
             </LayoutWrapper>
           </SidebarProvider>

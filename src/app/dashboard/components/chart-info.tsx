@@ -6,7 +6,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Le
 
 export function ChartInfo(data: SummaryData) {
   const hasCreditData = data && Object.keys(data.credit_type_distribution).length > 0
-  const hasTopProducts = data && data.top_products.length > 0
+  const hasTopProducts = data && data.top_products && data.top_products.length > 0
 
   const emptyDoughnutData = {
     labels: ['Sem dados'],

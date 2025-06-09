@@ -28,6 +28,10 @@ export function Insight(data: SummaryData) {
 }
 
 function getInsights(data: SummaryData): Insight[] {
+  if (!data || !data.total_invoices || !data.credit_type_distribution || !data.meter_category_totals || !data.top_products) {
+    return [{ text: "Dados insuficientes para gerar insights", type: 'warning' }]
+  }
+
   const insights: Insight[] = []
   if (!data) {
     insights.push({ text: "Nenhuma informação ainda", type: 'warning' })

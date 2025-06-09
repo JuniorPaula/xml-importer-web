@@ -60,7 +60,7 @@ export default function UploadPage() {
         },
       });
 
-      toast.success(res.data.message || "Arquivo enviado com sucesso");
+      toast.success("Arquivo será processado em segundo plano");
       setFile(null);
       setPreviewData([]);
       setImportId(res.data.data.import_id || null);

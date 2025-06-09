@@ -3,7 +3,8 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSidebar } from '@/context/sidebar-context'
-import { FileText, LayoutDashboard, ListOrdered, Package, Upload, User, Users } from 'lucide-react'
+import { FileText, LayoutDashboard, ListOrdered, LogOut, Package, Upload, User, Users } from 'lucide-react'
+import { useAuth } from '@/context/auth-context'
 
 const menuItems = [
   { label: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -16,6 +17,8 @@ const menuItems = [
 ]
 
 export default function Sidebar() {
+  const { logout } = useAuth();
+
   const pathname = usePathname()
   const {
     collapsed,
@@ -73,6 +76,16 @@ export default function Sidebar() {
               {!collapsed && <span>{label}</span>}
             </Link>
           ))}
+
+          <a
+            className={`flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-700 transition ${collapsed ? 'justify-center' : ''}`}
+            onClick={logout}
+          >
+            <div className="flex items-center justify-center w-6 h-6">
+              <LogOut size={20} className="text-red-500" />
+            </div>
+            {!collapsed && <span className="text-red-500">Sair</span>}
+          </a>
         </nav>
       </aside>
     </>

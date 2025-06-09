@@ -11,7 +11,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const isStaticFile = pathname.startsWith("/_next/") || pathname.startsWith("/images/") || pathname.includes("favicon.ico");
+  const isStaticFile = pathname.startsWith("/_next/")
+    || pathname.startsWith("/images/") || pathname.includes("favicon.ico") || pathname.startsWith("/assets/");
 
   if (isStaticFile) {
     return NextResponse.next();

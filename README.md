@@ -1,36 +1,136 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# eNube Importador
 
-## Getting Started
+Este repositório foi desenvolvido como parte de um **teste técnico** para a empresa **eNube**. Trata-se de uma aplicação fullstack para upload e análise de dados provenientes de arquivos `.xlsx`, com foco em experiência de uso, performance e clareza nos dados.
 
-First, run the development server:
+----------
+
+## Funcionalidades
+
+### Autenticação
+
+-   Login e registro de usuários com token JWT.
+    
+-   Middleware de proteção de rotas.
+    
+
+### Dashboard
+
+-   Cards com totais: faturas, itens, faturamento.
+    
+-   Gráfico de pizza: distribuição de tipos de crédito.
+    
+-   Gráfico de barras: produtos mais faturados.
+    
+-   Lista de insights inteligentes com base nos dados importados.
+    
+
+### Clientes
+
+-   Listagem paginada.
+    
+-   Filtro por nome e país (via query string).
+    
+
+### Produtos
+
+-   Listagem completa de produtos, SKUs, publishers e entitlement.
+    
+
+### Notas Fiscais
+
+-   Tabela com informações da nota, cliente e parceiro associado.
+    
+
+### Itens da Nota
+
+-   Listagem completa de itens.
+    
+-   Ordenação e filtro por categoria.
+    
+-   Link para detalhes de cada item.
+    
+
+### Importação de XML (.xlsx)
+
+-   Upload de arquivo com pré-visualização.
+    
+-   Envio assíncrono com resposta imediata.
+    
+-   Polling para acompanhamento da importação com `import_id`.
+    
+
+### Perfil do Usuário
+
+-   Exibição dos dados do usuário autenticado.
+    
+
+----------
+
+## Tecnologias
+
+### Frontend (Next.js)
+
+-   Next.js 15 (App Router)
+    
+-   TailwindCSS
+    
+-   Chart.js
+    
+-   React Toastify
+    
+-   Context API (auth, sidebar)
+    
+
+### Backend (Golang)
+
+-   Fiber
+    
+-   GORM (PostgreSQL)
+    
+-   excelize (leitura de planilhas)
+    
+-   Processamento assíncrono com workers (channels)
+    
+#### Link do repositório: [xml-importer-api](https://github.com/JuniorPaula/xml-importer-api.git)
+----------
+
+## Fluxo de Importação
+
+1.  O usuário envia um `.xlsx` via upload.
+    
+2.  O backend salva o arquivo e adiciona um job na fila.
+    
+3.  Um worker processa o arquivo e popula o banco.
+    
+4.  O frontend utiliza polling para verificar o status com base no `import_id`.
+    
+5.  Ao final, os dados ficam visíveis em todo o sistema.
+    
+
+----------
+
+## Previews
+
+![Dashboard](./assets/img5.png)
+![Processo de importação](./assets/img1.png)
+![Pré visualização](./assets/img2.png)
+![Tela de Clientes](./assets/img3.png)
+![Tela de Itens da fatura](./assets/img4.png)
+----------
+
+## 📖 Executar Localmente
+
+### Frontend
 
 ```bash
+cd frontend
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+----------
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Sobre o Desenvolvedor
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Desenvolvido com dedicação por [Junior Paula](https://github.com/JuniorPaula)
